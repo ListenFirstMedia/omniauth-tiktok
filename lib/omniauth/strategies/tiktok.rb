@@ -12,14 +12,17 @@ module OmniAuth
       option :name, 'tiktok'
 
       option :client_options, {
-        site: 'https://open-api.tiktok.com',
-        authorize_url: 'https://open-api.tiktok.com/platform/oauth/connect',
-        token_url: 'https://open-api.tiktok.com/oauth/access_token',
+        site: 'https://www.tiktok.com',
+        authorize_url: 'https://www.tiktok.com/v2/auth/authorize/',
+        token_url: 'https://open.tiktokapis.com/v2/oauth/token/',
         extract_access_token: proc do |client, hash|
-          hash = hash['data']
           token = hash.delete('access_token') || hash.delete(:access_token)
           token && ::OAuth2::AccessToken.new(client, token, hash)
         end
+      }
+
+      option :token_params, {
+        grant_type: 'authorization_code'
       }
 
       option :authorize_options, %i[scope display auth_type]
@@ -48,9 +51,7 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= access_token
-                      .get("#{USER_INFO_URL}?open_id=#{access_token.params['open_id']}&access_token=#{access_token.token}")
-                      .parsed || {}
+        @raw_info ||= access_token.get("https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url&access_token=#{access_token.token}").parsed || {}
       end
 
       def callback_url
