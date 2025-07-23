@@ -6,7 +6,7 @@ module OmniAuth
   module Strategies
     class Tiktok < OmniAuth::Strategies::OAuth2
       class NoAuthorizationCodeError < StandardError; end
-      DEFAULT_SCOPE = 'user.info.basic,video.list'
+      DEFAULT_SCOPE = 'user.info.basic,user.info.profile,user.info.stats,video.list'
       USER_INFO_URL = 'https://open-api.tiktok.com/oauth/userinfo'
 
       option :name, 'tiktok'
@@ -51,7 +51,7 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= access_token.get("https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url&access_token=#{access_token.token}").parsed || {}
+        @raw_info ||= access_token.get("https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,username,profile_deep_link&access_token=#{access_token.token}").parsed || {}
       end
 
       def callback_url
